@@ -9,18 +9,21 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.stereotype.Service;
 
 @Service
-public class ApiPreAuthUserDetailsService implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> {
+public class ApiPreAuthUserDetailsService implements
+		AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> {
 
 	@Autowired
 	ApiPreAuthenticatedTokenCacheService apiPreAuthenticatedTokenCacheService;
 	
 	@Override
-	public UserDetails loadUserDetails(PreAuthenticatedAuthenticationToken token) throws UsernameNotFoundException {
+	public UserDetails loadUserDetails(PreAuthenticatedAuthenticationToken token)
+			throws UsernameNotFoundException {
 		String xAuthToken = (String) token.getPrincipal();
 		User user = apiPreAuthenticatedTokenCacheService.getFromCache(xAuthToken);
 
 		if (user == null)
-			throw new UsernameNotFoundException("Pre authenticated token not found : " + xAuthToken);
+			throw new UsernameNotFoundException(
+					"Pre authenticated token not found : " + xAuthToken);
 
 		return user;
 	}

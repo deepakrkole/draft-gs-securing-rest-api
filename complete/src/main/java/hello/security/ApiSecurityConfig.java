@@ -1,9 +1,8 @@
 package hello.security;
 
+import javax.servlet.Filter;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.servlet.Filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -37,28 +36,30 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
 	ApiAuthenticationFailureHandler apiAuthenticationFailureHandler;
 	
 	@Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-            .authorizeRequests()
-                .antMatchers("/api/unsecured").permitAll()
-                .antMatchers("/authenticate").anonymous()
-                .antMatchers("/api/**").hasRole("USER")
-            .and()
-            .addFilterAfter(apiAuthFilter(), ApiRequestHeaderAuthenticationFilter.class)
-            .addFilter(preAuthFilter());
-    }
+	protected void configure(HttpSecurity http) throws Exception {
+		http.sessionManagement()
+			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+			.and()
+			.authorizeRequests()
+				.antMatchers("/api/unsecured").permitAll()
+				.antMatchers("/authenticate").anonymous()
+				.antMatchers("/api/**").hasRole("USER")
+			.and()
+			.addFilterAfter(apiAuthFilter(),
+					ApiRequestHeaderAuthenticationFilter.class)
+			.addFilter(preAuthFilter());
+	}
 
-    @Bean
-    public Filter apiAuthFilter() throws Exception {
+	@Bean
+	public Filter apiAuthFilter() throws Exception {
 		RequestMatcher antReqMatch = new AntPathRequestMatcher("/authenticate");
 		
 		List<RequestMatcher> reqMatches = new ArrayList<RequestMatcher>();
 		reqMatches.add(antReqMatch);
 		RequestMatcher reqMatch = new AndRequestMatcher(reqMatches);
 
-		UsernamePasswordAuthenticationFilter filter = new UsernamePasswordAuthenticationFilter();
+		UsernamePasswordAuthenticationFilter filter =
+				new UsernamePasswordAuthenticationFilter();
 		filter.setPostOnly(false);
 		filter.setUsernameParameter("username");
 		filter.setPasswordParameter("password");
@@ -67,12 +68,12 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
 		filter.setAuthenticationFailureHandler(apiAuthenticationFailureHandler);
 		filter.setAuthenticationManager(authenticationManager());
 		return filter;
-    	
-    }
+	}
 
 	@Bean
 	public Filter preAuthFilter() {
-		ApiRequestHeaderAuthenticationFilter filter = new ApiRequestHeaderAuthenticationFilter();
+		ApiRequestHeaderAuthenticationFilter filter =
+				new ApiRequestHeaderAuthenticationFilter();
 		filter.setAuthenticationManager(preAuthAuthenticationManager());
 		return filter;
 	}
@@ -80,19 +81,22 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	protected AuthenticationManager preAuthAuthenticationManager() {
 
-		PreAuthenticatedAuthenticationProvider preAuthProvider= new PreAuthenticatedAuthenticationProvider();
-		preAuthProvider.setPreAuthenticatedUserDetailsService(preAuthUserDetailsService);
+		PreAuthenticatedAuthenticationProvider preAuthProvider=
+				new PreAuthenticatedAuthenticationProvider();
+		preAuthProvider.setPreAuthenticatedUserDetailsService(
+				preAuthUserDetailsService);
 		
-		List<AuthenticationProvider> providers = new  ArrayList<AuthenticationProvider>();
+		List<AuthenticationProvider> providers =
+				new  ArrayList<AuthenticationProvider>();
 		providers.add(preAuthProvider);
 		
 		ProviderManager authMan = new ProviderManager(providers);
 		return authMan;
 	}
     
-    @Configuration
-    protected static class AuthenticationConfiguration extends
-            GlobalAuthenticationConfigurerAdapter {
+	@Configuration
+	protected static class AuthenticationConfiguration extends
+			GlobalAuthenticationConfigurerAdapter {
 
         @Override
         public void init(AuthenticationManagerBuilder auth) throws Exception {

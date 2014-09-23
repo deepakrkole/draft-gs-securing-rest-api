@@ -1,11 +1,10 @@
 package hello.security;
 
-import java.io.IOException;
-import java.util.UUID;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -18,12 +17,11 @@ public class ApiAuthenticationSuccessHandler implements AuthenticationSuccessHan
 
 	@Autowired
 	ApiPreAuthenticatedTokenCacheService apiPreAuthenticatedTokenCacheService;
-	
-	public ApiAuthenticationSuccessHandler() {
-	}
 
 	@Override
-	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+	public void onAuthenticationSuccess(HttpServletRequest request,
+		HttpServletResponse response, Authentication authentication)
+			throws IOException, ServletException {
 
 		response.setStatus(HttpServletResponse.SC_OK);
 		

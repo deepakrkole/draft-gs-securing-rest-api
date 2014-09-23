@@ -15,11 +15,11 @@ import org.springframework.stereotype.Service;
 public class ApiPreAuthenticatedTokenCacheService {
 
 	@Bean
-    public CacheManager cacheManager() {
-        SimpleCacheManager cacheManager = new SimpleCacheManager();
-        cacheManager.setCaches(Arrays.asList(new ConcurrentMapCache("tokens")));
-        return cacheManager;
-    }
+	public CacheManager cacheManager() {
+		SimpleCacheManager cacheManager = new SimpleCacheManager();
+		cacheManager.setCaches(Arrays.asList(new ConcurrentMapCache("tokens")));
+		return cacheManager;
+	}
 	
 	public void putInCache(String xAuthToken, User user) {
 		cacheManager().getCache("tokens").put(xAuthToken, user);
